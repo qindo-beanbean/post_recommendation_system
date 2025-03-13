@@ -13,7 +13,7 @@ Authentication: Flask-Login
 ## Installation
 1. Clone the repository from github
 ```bash
-git clone https://github.com/qindo-beanbean/post-recommendation-app.git
+git clone https://github.com/qindo-beanbean/post_recommendation_system.git
 cd post-recommendation-app
 ```
 2. Create and activate a virtual environment/or use Docker
