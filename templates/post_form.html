@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Post Feed{% endblock %}
+
+{% block content %}
+<div class="post-form">
+    <h1>Create new post</h1>
+    <form method="POST" action="{{ url_for('main.create_post') }}" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="content">Content</label>
+            <textarea id="content" name="content" rows="5" required></textarea>
+        </div>
+        <div class="form-group">
+            <!-- <label for="image">Image(Optional)</label> -->
+            <!-- <input type="file" id="image" name="image" accept="image/*">
+            <div class="image-preview" id="imagePreview">
+                <img src="" alt="Image preview" id="preview-image" style="display: none;">
+            </div> -->
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Post</button>
+            <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Preview
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageInput = document.getElementById('image');
+        const previewImage = document.getElementById('preview-image');
+        
+        imageInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.addEventListener('load', function() {
+                    previewImage.setAttribute('src', this.result);
+                    previewImage.style.display = 'block';
+                });
+                
+                reader.readAsDataURL(file);
+            } else {
+                previewImage.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}

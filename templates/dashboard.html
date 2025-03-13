@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}My feed{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h1>Popular</h1>
+    <div class="create-post-link">
+        <a href="{{ url_for('main.create_post') }}" class="btn btn-primary">Creat New Post</a>
+    </div>
+    
+    <div class="posts-container">
+        {% if posts %}
+            {% for post in posts %}
+                <div class="post-card" data-post-id="{{ post.id }}">
+                    <div class="post-header">
+                        <span class="post-author">{{ post.author.email }}</span>
+                        <span class="post-date">{{ post.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+                    </div>
+                    <div class="post-content">
+                        <p>{{ post.content }}</p>
+                        {% if post.image %}
+                            <div class="post-image">
+                                <img src="{{ url_for('static', filename=post.image) }}" alt="Image">
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="post-actions">
+                        <button class="like-button {% if current_user.has_liked_post(post) %}liked{% endif %}" 
+                                data-post-id="{{ post.id }}">
+                            <span class="like-icon">❤</span>
+                            <span class="like-count">{{ post.like_count }}</span>
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-posts-message">
+                <p>Be the first to post!</p>
+                <a href="{{ url_for('main.create_post') }}" class="btn btn-primary">Create New</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Like
+        const likeButtons = document.querySelectorAll('.like-button');
+        
+        likeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.getAttribute('data-post-id');
+                const likeCount = this.querySelector('.like-count');
+                
+                fetch(`/post/${postId}/like`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Update like count
+                        likeCount.textContent = data.count;
+                        
+                        // Switch like mode
+                        if (data.action === 'liked') {
+                            button.classList.add('liked');
+                        } else {
+                            button.classList.remove('liked');
+                        }
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+</script>
+{% endblock %}
